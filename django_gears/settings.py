@@ -27,6 +27,10 @@ DEFAULT_POSTPROCESSORS = {
 
 GEARS_DEBUG = getattr(settings, 'GEARS_DEBUG', settings.DEBUG)
 
+# Controls whether or not a query string with the file's modified time is
+# appended to the file path.
+GEARS_CACHE_BUST = getattr(settings, 'GEARS_CACHE_BUST', settings.DEBUG)
+
 GEARS_URL = getattr(settings, 'GEARS_URL', settings.STATIC_URL)
 
 
