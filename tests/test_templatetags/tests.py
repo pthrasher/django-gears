@@ -15,13 +15,23 @@ class CSSAssetTagTests(TestCase):
             self.render(u'{% css_asset_tag "css/script.css" %}'),
             u'<link rel="stylesheet" href="/static/css/script.css">')
 
-    def test_outputs_all_requirements_in_debug_mode(self):
+    def test_outputs_all_requirements_in_debug_mode_with_cache_busting(self):
+
+        with patch.object(Asset, 'mtime') as mtime:
+            mtime.__get__ = Mock(return_value = 123)
+
+            self.assertEqual(
+                self.render(u'{% css_asset_tag "css/style.css" debug cache_bust %}'),
+                (u'<link rel="stylesheet" href="/static/css/reset.css?body=1&v=123">\n'
+                u'<link rel="stylesheet" href="/static/css/base.css?body=1&v=123">\n'
+                 u'<link rel="stylesheet" href="/static/css/style.css?body=1&v=123">'))
+    def test_outputs_all_requirements_in_debug_mode_without_cache_busting(self):
 
         with patch.object(Asset, 'mtime') as mtime:
             mtime.__get__ = Mock(return_value = 123)
 
             self.assertEqual(
                 self.render(u'{% css_asset_tag "css/style.css" debug %}'),
-                (u'<link rel="stylesheet" href="/static/css/reset.css?body=1&v=123">\n'
-                u'<link rel="stylesheet" href="/static/css/base.css?body=1&v=123">\n'
-                 u'<link rel="stylesheet" href="/static/css/style.css?body=1&v=123">'))
+                (u'<link rel="stylesheet" href="/static/css/reset.css">\n'
+                u'<link rel="stylesheet" href="/static/css/base.css">\n'
+                 u'<link rel="stylesheet" href="/static/css/style.css">'))

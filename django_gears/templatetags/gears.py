@@ -9,29 +9,34 @@ register = Library()
 
 class AssetTagNode(Node):
 
-    def __init__(self, logical_path, debug):
+    def __init__(self, logical_path, debug, cache_bust):
         self.logical_path = logical_path
         self.debug = debug
+        self.cache_bust = cache_bust
 
     @classmethod
     def handle_token(cls, parser, token):
         bits = token.split_contents()
-        if len(bits) not in (2, 3):
+        if len(bits) not in (2, 3, 4):
             msg = '%r tag takes one argument: the logical path to the public asset'
             raise TemplateSyntaxError(msg % bits[0])
-        debug = (len(bits) == 3)
+        debug = (len(bits) == 3 or len(bits) == 4)
         if debug and bits[2] != 'debug':
             msg = "Second (optional) argument to %r tag must be 'debug'"
             raise TemplateSyntaxError(msg % bits[0])
+        cache_bust = (len(bits) == 4)
+        if cache_bust and bits[3] != 'cache_bust':
+            msg = "Third (optional) argument to %r tag must be 'cache_bust'"
+            raise TemplateSyntaxError(msg % bits[0])
         logical_path = parser.compile_filter(bits[1])
-        return cls(logical_path, debug)
+        return cls(logical_path, debug, cache_bust)
 
 
     def render(self, context):
         logical_path = self.logical_path.resolve(context)
         if self.debug or GEARS_DEBUG:
             asset = build_asset(environment, logical_path)
-            if GEARS_CACHE_BUST:
+            if self.cache_bust or GEARS_CACHE_BUST:
                 paths = (('%s?body=1&v=%s' % (r.attributes.logical_path, r.mtime))\
                     for r in asset.requirements)
             else:
