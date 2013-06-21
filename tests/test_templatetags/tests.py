@@ -32,6 +32,6 @@ class CSSAssetTagTests(TestCase):
 
             self.assertEqual(
                 self.render(u'{% css_asset_tag "css/style.css" debug %}'),
-                (u'<link rel="stylesheet" href="/static/css/reset.css">\n'
-                u'<link rel="stylesheet" href="/static/css/base.css">\n'
-                 u'<link rel="stylesheet" href="/static/css/style.css">'))
+                (u'<link rel="stylesheet" href="/static/css/reset.css?body=1">\n'
+                u'<link rel="stylesheet" href="/static/css/base.css?body=1">\n'
+                 u'<link rel="stylesheet" href="/static/css/style.css?body=1">'))

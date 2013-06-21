@@ -40,7 +40,7 @@ class AssetTagNode(Node):
                 paths = (('%s?body=1&v=%s' % (r.attributes.logical_path, r.mtime))\
                     for r in asset.requirements)
             else:
-                paths = (r.attributes.logical_path \
+                paths = (('%s?body=1' % (r.attributes.logical_path,))\
                     for r in asset.requirements)
         else:
             if logical_path in environment.manifest.files:
